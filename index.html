@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Ballons DZ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <div class="logo">⚽ Ballons DZ</div>
+  <nav>
+    <a href="#home">Accueil</a>
+    <a href="#products">Produits</a>
+    <a href="#order">Commande</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Ballons de football professionnels</h1>
+    <p>Commande directe • Livraison dans toute l’Algérie</p>
+    <a href="#order" class="btn-hero">Commander maintenant</a>
+  </div>
+</section>
+
+<!-- PRODUITS -->
+<section class="products" id="products">
+  <h2>Nos Produits</h2>
+  <div class="cards">
+
+    <div class="card">
+      <img src="images/ballon1.jpg" class="product-img">
+      <h3>Ballon Entraînement</h3>
+      <p class="price">1800 DA</p>
+      <label>
+        <input type="checkbox" value="1800" data-name="Ballon Entraînement" class="product-checkbox">
+        Choisir
+      </label>
+      <input type="number" min="1" value="1" class="qty">
+    </div>
+
+    <div class="card">
+      <img src="images/ballon2.jpg" class="product-img">
+      <h3>Ballon Enfant</h3>
+      <p class="price">1200 DA</p>
+      <label>
+        <input type="checkbox" value="1200" data-name="Ballon Enfant" class="product-checkbox">
+        Choisir
+      </label>
+      <input type="number" min="1" value="1" class="qty">
+    </div>
+
+    <div class="card">
+      <img src="images/ballon3.jpg" class="product-img">
+      <h3>Ballon Match</h3>
+      <p class="price">2500 DA</p>
+      <label>
+        <input type="checkbox" value="2500" data-name="Ballon Match" class="product-checkbox">
+        Choisir
+      </label>
+      <input type="number" min="1" value="1" class="qty">
+    </div>
+
+  </div>
+</section>
+
+<!-- COMMANDE -->
+<section class="order" id="order">
+<h2>Passer une commande</h2>
+
+<div class="mini-cart">
+<h3>Panier</h3>
+<ul id="cart-list"></ul>
+<p class="total">Total : <span id="total">0</span> DA</p>
+</div>
+
+<form onsubmit="sendOrder(); return false;">
+
+<input type="text" id="name" placeholder="Nom et prénom" required>
+<input type="tel" id="phone" placeholder="Numéro de téléphone" required>
+
+<select id="wilaya" onchange="calcTotal()" required>
+<option value="">Choisir la wilaya</option>
+<option value="400">Alger (+400 DA)</option>
+<option value="600">Blida (+600 DA)</option>
+<option value="700">Oran (+700 DA)</option>
+<option value="700">Constantine (+700 DA)</option>
+<option value="800">Autre (+800 DA)</option>
+</select>
+
+<textarea id="address" placeholder="Adresse exacte"></textarea>
+
+<p class="cod">Paiement à la livraison</p>
+
+<button type="submit">Envoyer la commande</button>
+</form>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <h2>Contact</h2>
+  <p class="phone">📞 0796 96 24 49</p>
+  <a href="https://wa.me/213796962449" class="whatsapp-btn">WhatsApp Direct</a>
+</section>
+
+<footer>
+<p>© 2025 Ballons DZ</p>
+</footer>
+
+<a href="https://wa.me/213796962449" class="whatsapp-float">💬</a>
+
+<script>
+function calcTotal(){
+  let total=0;
+  let cartList = document.getElementById('cart-list');
+  cartList.innerHTML = "";
+
+  const checkboxes = document.querySelectorAll('.product-checkbox');
+  const qtys = document.querySelectorAll('.qty');
+
+  checkboxes.forEach((checkbox,index)=>{
+    const qty = qtys[index];
+    if(checkbox.checked){
+      const itemTotal = Number(checkbox.value) * Number(qty.value);
+      total += itemTotal;
+
+      let li = document.createElement('li');
+      li.textContent = checkbox.dataset.name + " x"+qty.value+" = "+itemTotal+" DA";
+      cartList.appendChild(li);
+    }
+  });
+
+  let delivery = document.getElementById("wilaya").value;
+  if(delivery) total += Number(delivery);
+
+  document.getElementById("total").innerText = total;
+}
+
+function sendOrder(){
+  let name=document.getElementById("name").value;
+  let phone=document.getElementById("phone").value;
+  let wilaya=document.getElementById("wilaya").options[wilaya.selectedIndex].text;
+  let address=document.getElementById("address").value;
+  let total=document.getElementById("total").innerText;
+
+  let products="";
+
+  const checkboxes = document.querySelectorAll('.product-checkbox');
+  const qtys = document.querySelectorAll('.qty');
+
+  checkboxes.forEach((checkbox,index)=>{
+    const qty = qtys[index];
+    if(checkbox.checked){
+      products += "- "+checkbox.dataset.name+" x"+qty.value+" ("+(checkbox.value*qty.value)+" DA)%0A";
+    }
+  });
+
+  if(products === ""){
+    alert("Veuillez sélectionner au moins un produit");
+    return;
+  }
+
+  let msg =
+  "🛒 Nouvelle commande%0A"+
+  "Nom: "+name+"%0A"+
+  "Téléphone: "+phone+"%0A"+
+  "Wilaya: "+wilaya+"%0A"+
+  "Produits:%0A"+products+
+  "Adresse: "+address+"%0A"+
+  "Total: "+total+" DA%0A"+
+  "Paiement à la livraison";
+
+  window.open("https://wa.me/213796962449?text="+msg,"_blank");
+}
+
+document.querySelectorAll('.product-checkbox, .qty').forEach(el=>{
+  el.addEventListener('change',calcTotal);
+});
+</script>
+
+</body>
+</html>
