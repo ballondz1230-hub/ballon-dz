@@ -32,41 +32,28 @@
 <!-- PRODUITS -->
 <section class="products" id="products">
   <h2>Nos Produits</h2>
-  <div class="cards">
 
+  <div class="cards">
     <div class="card">
-      <img src="images/ballon1.jpg" class="product-img">
+      <img src="images/ballon1.jpg">
       <h3>Ballon Entraînement</h3>
       <p class="price">1800 DA</p>
-      <label>
-        <input type="checkbox" value="1800" data-name="Ballon Entraînement" class="product-checkbox">
-        Choisir
-      </label>
-      <input type="number" min="1" value="1" class="qty">
+      <a href="#order" class="btn-card">Commander</a>
     </div>
 
     <div class="card">
-      <img src="images/ballon2.jpg" class="product-img">
+      <img src="images/ballon2.jpg">
       <h3>Ballon Enfant</h3>
       <p class="price">1200 DA</p>
-      <label>
-        <input type="checkbox" value="1200" data-name="Ballon Enfant" class="product-checkbox">
-        Choisir
-      </label>
-      <input type="number" min="1" value="1" class="qty">
+      <a href="#order" class="btn-card">Commander</a>
     </div>
 
     <div class="card">
-      <img src="images/ballon3.jpg" class="product-img">
+      <img src="images/ballon3.jpg">
       <h3>Ballon Match</h3>
       <p class="price">2500 DA</p>
-      <label>
-        <input type="checkbox" value="2500" data-name="Ballon Match" class="product-checkbox">
-        Choisir
-      </label>
-      <input type="number" min="1" value="1" class="qty">
+      <a href="#order" class="btn-card">Commander</a>
     </div>
-
   </div>
 </section>
 
@@ -74,14 +61,7 @@
 <section class="order" id="order">
 <h2>Passer une commande</h2>
 
-<div class="mini-cart">
-<h3>Panier</h3>
-<ul id="cart-list"></ul>
-<p class="total">Total : <span id="total">0</span> DA</p>
-</div>
-
 <form onsubmit="sendOrder(); return false;">
-
 <input type="text" id="name" placeholder="Nom et prénom" required>
 <input type="tel" id="phone" placeholder="Numéro de téléphone" required>
 
@@ -94,8 +74,29 @@
 <option value="800">Autre (+800 DA)</option>
 </select>
 
+<div class="products-order">
+<label>
+<input type="checkbox" value="1800" data-name="Ballon Entraînement" onchange="calcTotal()">
+ Ballon Entraînement (1800 DA)
+</label>
+<input type="number" min="1" value="1" class="qty" onchange="calcTotal()">
+
+<label>
+<input type="checkbox" value="1200" data-name="Ballon Enfant" onchange="calcTotal()">
+ Ballon Enfant (1200 DA)
+</label>
+<input type="number" min="1" value="1" class="qty" onchange="calcTotal()">
+
+<label>
+<input type="checkbox" value="2500" data-name="Ballon Match" onchange="calcTotal()">
+ Ballon Match (2500 DA)
+</label>
+<input type="number" min="1" value="1" class="qty" onchange="calcTotal()">
+</div>
+
 <textarea id="address" placeholder="Adresse exacte"></textarea>
 
+<p class="total">Total : <span id="total">0</span> DA</p>
 <p class="cod">Paiement à la livraison</p>
 
 <button type="submit">Envoyer la commande</button>
@@ -118,28 +119,16 @@
 <script>
 function calcTotal(){
   let total=0;
-  let cartList = document.getElementById('cart-list');
-  cartList.innerHTML = "";
-
-  const checkboxes = document.querySelectorAll('.product-checkbox');
-  const qtys = document.querySelectorAll('.qty');
-
-  checkboxes.forEach((checkbox,index)=>{
-    const qty = qtys[index];
+  document.querySelectorAll('.products-order label').forEach((label,index)=>{
+    let checkbox=label.querySelector('input[type="checkbox"]');
+    let qty=document.querySelectorAll('.qty')[index];
     if(checkbox.checked){
-      const itemTotal = Number(checkbox.value) * Number(qty.value);
-      total += itemTotal;
-
-      let li = document.createElement('li');
-      li.textContent = checkbox.dataset.name + " x"+qty.value+" = "+itemTotal+" DA";
-      cartList.appendChild(li);
+      total+=Number(checkbox.value)*Number(qty.value);
     }
   });
-
-  let delivery = document.getElementById("wilaya").value;
-  if(delivery) total += Number(delivery);
-
-  document.getElementById("total").innerText = total;
+  let delivery=document.getElementById("wilaya").value;
+  if(delivery) total+=Number(delivery);
+  document.getElementById("total").innerText=total;
 }
 
 function sendOrder(){
@@ -148,40 +137,24 @@ function sendOrder(){
   let wilaya=document.getElementById("wilaya").options[wilaya.selectedIndex].text;
   let address=document.getElementById("address").value;
   let total=document.getElementById("total").innerText;
-
   let products="";
-
-  const checkboxes = document.querySelectorAll('.product-checkbox');
-  const qtys = document.querySelectorAll('.qty');
-
-  checkboxes.forEach((checkbox,index)=>{
-    const qty = qtys[index];
+  document.querySelectorAll('.products-order label').forEach((label,index)=>{
+    let checkbox=label.querySelector('input[type="checkbox"]');
+    let qty=document.querySelectorAll('.qty')[index];
     if(checkbox.checked){
-      products += "- "+checkbox.dataset.name+" x"+qty.value+" ("+(checkbox.value*qty.value)+" DA)%0A";
+      products+="- "+checkbox.dataset.name+" x"+qty.value+" ("+(checkbox.value*qty.value)+" DA)%0A";
     }
   });
-
-  if(products === ""){
-    alert("Veuillez sélectionner au moins un produit");
-    return;
-  }
-
-  let msg =
-  "🛒 Nouvelle commande%0A"+
-  "Nom: "+name+"%0A"+
-  "Téléphone: "+phone+"%0A"+
-  "Wilaya: "+wilaya+"%0A"+
-  "Produits:%0A"+products+
-  "Adresse: "+address+"%0A"+
-  "Total: "+total+" DA%0A"+
-  "Paiement à la livraison";
-
+  let msg="🛒 Nouvelle commande%0A"+
+          "Nom: "+name+"%0A"+
+          "Téléphone: "+phone+"%0A"+
+          "Wilaya: "+wilaya+"%0A"+
+          "Produits:%0A"+products+
+          "Adresse: "+address+"%0A"+
+          "Total: "+total+" DA%0A"+
+          "Paiement à la livraison";
   window.open("https://wa.me/213796962449?text="+msg,"_blank");
 }
-
-document.querySelectorAll('.product-checkbox, .qty').forEach(el=>{
-  el.addEventListener('change',calcTotal);
-});
 </script>
 
 </body>
